@@ -66,15 +66,18 @@ static const char unknown_str[] = "n/a";
  */
 static const struct arg args[] = {
 	/* function format  argument */
-    { run_command, " BRI (%s%%)", "xbacklight | sed 's/.......$//'"},
 
-    { run_command, " MUT (%s)", "pacmd list-sinks | awk '/muted/ { print $2 }'"}, 
+    /* Song information */
+    { run_command, " SONG (%s - ", "mpc current -f %artist%"},
+    { run_command, "%s - ", "mpc current -f %title%"},
+    { run_command, "%s)", "echo $(mpc status | grep '%)' | awk '{ print $3 }')"},
+    { run_command, " PLAY (%s)", "[[ $(mpc status | sed -n 2p | awk '{print $1;}') == '[playing]' ]] && echo 'yes' || echo 'no'"},
+    { run_command, " REP (%s)", "[[ $(mpc status | grep 'repeat: on') ]] && echo 'yes' || echo 'no'"},
+    { run_command, " SHUFF (%s)", "[[ $(mpc status | tail -n 1 | awk '{print $6}') == 'on' ]] && echo 'yes' || echo 'no'"},
+
+    { run_command, " MUT (%s)", "[[ $(pacmd list-sinks | grep 'muted: yes') ]] && echo 'yes' || echo 'no'"},
 
     { run_command, " VOL (%s)", "amixer | awk -F\"[][]\" '/Left:/ { print $2 }' | head -n1" },
-
-    { wifi_perc, " WIFI (%s)", "wlp0s20f3" },
-
-    { battery_perc, " BAT (%s%%)", NULL },
 
     { ram_perc, " RAM (%s%%)", NULL },
 
